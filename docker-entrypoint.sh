@@ -299,13 +299,13 @@ docker_init_ssl() {
     	cat >&2 <<-'EOWARN'
 			********************************************************************************
 			WARNING: POSTGRES_SSL_KEY and POSTGRES_SSL_CRT had not been set
-			         so we will create some random one
+			         so we will create a random certificate
 			********************************************************************************
 		EOWARN
         cd ~/data
         openssl req -new -text -passout pass: -subj /CN=localhost -out server.req
         openssl rsa -in privkey.pem -passin pass: -out server.key
-        openssl req -x509 -in server.req -text -key server.key -out server.crt
+        openssl req -x509 -in server.req -sha256 -text -key server.key -out server.crt
     else
     	cat >&2 <<-'EOWARN'
 			********************************************************************************
@@ -313,8 +313,8 @@ docker_init_ssl() {
 			********************************************************************************
 		EOWARN
         cd
-        echo $POSTGRES_SSL_KEY | sed 's/ /\n/g' > server.key
-        echo $POSTGRES_SSL_CRT | sed 's/ /\n/g' > server.crt
+        echo $POSTGRES_SSL_KEY | sed 's/|/\n/g' > server.key
+        echo $POSTGRES_SSL_CRT | sed 's/|/\n/g' > server.crt
     fi
 }
 _main() {
