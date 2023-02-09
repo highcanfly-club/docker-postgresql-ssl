@@ -8,7 +8,7 @@ Because it has a built in ssl support.
 At each restart the server certificate is recreated.  You can provide your own by passing environment variables:  
 ```sh
 export POSTGRES_SSL_KEY=`cat server.key`
-export POSTGRES_SSL_SRT=`cat server.crt`
+export POSTGRES_SSL_CRT=`cat server.crt`
 ```
 Note that it is possible to import key and cert with a single line string by replacing \n by spaces.  
 Example:  
