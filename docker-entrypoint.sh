@@ -317,6 +317,11 @@ docker_init_ssl() {
         echo $POSTGRES_SSL_CRT | sed 's/|/\n/g' > server.crt
     fi
 }
+
+#init nfs for cluster
+docker_init_nfs(){
+			nfsd.sh &
+}
 _main() {
 	# if first arg looks like a flag, assume we want to run postgres server
 	if [ "${1:0:1}" = '-' ]; then
@@ -373,6 +378,7 @@ _main() {
 		fi
 	fi
     docker_init_ssl
+	docker_init_nfs
 	exec "$@"
 }
 
