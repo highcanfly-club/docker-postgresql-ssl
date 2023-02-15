@@ -344,7 +344,7 @@ _main() {
 
 		# only run initialization on an empty data directory
 		#if [ -z "$DATABASE_ALREADY_EXISTS" ]; then
-		if [ ! -f "/var/lib/postgresql/data/INSTALLED" ] && [ "$(id -u)" = '0' ]; then
+		if [ ! -f "/var/lib/postgresql/data/INSTALLED" ] && [ "$(id -u)" != '0' ]; then
 			#debug
 			ls -lR /var/lib/postgresql
 			docker_verify_minimum_env
