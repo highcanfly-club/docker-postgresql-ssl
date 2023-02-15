@@ -344,7 +344,7 @@ _main() {
 
 		# only run initialization on an empty data directory
 		#if [ -z "$DATABASE_ALREADY_EXISTS" ]; then
-		if [ ! -f "/var/lib/postgresql/INSTALLED" ]; then
+		if [ ! -f "/var/lib/postgresql/data/INSTALLED" ]; then
 			docker_verify_minimum_env
 
 			# check dir permissions to reduce likelihood of half-initialized database
@@ -375,7 +375,7 @@ _main() {
 				PostgreSQL init process complete; ready for start up.
 
 			EOM
-			echo "1" > /var/lib/postgresql/INSTALLED
+			echo "1" > /var/lib/postgresql/data/INSTALLED
 		else
 			cat <<-'EOM'
 
