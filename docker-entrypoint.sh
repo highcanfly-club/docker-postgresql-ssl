@@ -36,7 +36,7 @@ _is_sourced() {
 docker_create_db_directories() {
 	local user; user="$(id -u)"
 
-	mkdir -p "$PGDATA"
+	mkdir -pv "$PGDATA"
 	# ignore failure since there are cases where we can't chmod (and PostgreSQL might fail later anyhow - it's picky about permissions of this directory)
 	chmod 700 "$PGDATA" || :
 
@@ -226,12 +226,9 @@ docker_setup_env() {
 
 	declare -g DATABASE_ALREADY_EXISTS
 	# look specifically for PG_VERSION, as it is expected in the DB dir
-	cat >&2 <<-'EOWARN'
-		********************************************************************************
-								TEST IF DATABASE EXISTS
-		********************************************************************************
-	EOWARN
 	if [ -e "$PGDATA/PG_VERSION" ]; then
+		USER=`whoami`
+		echo "$USER: DATABASE EXISTS"
 		DATABASE_ALREADY_EXISTS='true'
 	fi
 }
@@ -308,8 +305,9 @@ docker_init_ssl() {
 			********************************************************************************
 		EOWARN
         cd ~/data
-        openssl req -new -text -passout pass: -subj /CN=localhost -out server.req
-        openssl rsa -in privkey.pem -passin pass: -out server.key
+		rm -f privkey.pem
+        openssl req -nodes -new -keyout privkey.pem -text  -subj /CN=postgresql -out server.req
+        openssl rsa -in privkey.pem -out server.key
         openssl req -x509 -in server.req -sha256 -text -key server.key -out server.crt
     else
     	cat >&2 <<-'EOWARN'
@@ -338,6 +336,8 @@ _main() {
 		# setup data directories and permissions (when run as root)
 		docker_create_db_directories
 		if [ "$(id -u)" = '0' ]; then
+			# init nfs
+			docker_init_nfs
 			# then restart script as postgres user
 			exec su-exec postgres "$BASH_SOURCE" "$@"
 		fi
@@ -383,7 +383,6 @@ _main() {
 		fi
 	fi
     docker_init_ssl
-	docker_init_nfs
 	exec "$@"
 }
 
