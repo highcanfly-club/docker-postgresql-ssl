@@ -226,7 +226,12 @@ docker_setup_env() {
 
 	declare -g DATABASE_ALREADY_EXISTS
 	# look specifically for PG_VERSION, as it is expected in the DB dir
-	if [ -s "$PGDATA/PG_VERSION" ]; then
+	cat >&2 <<-'EOWARN'
+		********************************************************************************
+								TEST IF DATABASE EXISTS
+		********************************************************************************
+	EOWARN
+	if [ -e "$PGDATA/PG_VERSION" ]; then
 		DATABASE_ALREADY_EXISTS='true'
 	fi
 }
